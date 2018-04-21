@@ -28,7 +28,10 @@
       "max": 2
     },
     "plugin": true,
-    "exec": "{nodeLoader} {path}"
+    "exec": "{nodeLoader} {path}",
+    "config": {
+      "devicePath": ""
+    }
   },
   "dependencies": {
     "cm11a-js": "^0.1.0"
