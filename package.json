@@ -1,0 +1,25 @@
+{
+  "name": "x10-cm11-adapter",
+  "version": "0.0.1",
+  "description": "A Mozilla IoT adapter for controlling X10 devices through a CM11A serial interface.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlanDThiessen/x10-cm11-adapter.git"
+  },
+  "keywords": [
+    "X10",
+    "IoT",
+    "Mozilla",
+    "CM11"
+  ],
+  "author": "Alan Thiessen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlanDThiessen/x10-cm11-adapter/issues"
+  },
+  "homepage": "https://github.com/AlanDThiessen/x10-cm11-adapter#readme"
+}
