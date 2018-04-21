@@ -24,31 +24,4 @@
  *
  ******************************************************************************/
 
-(function() {
-    'use strict';
-
-    let Adapter, Database, utils, CM11A;
-
-    CM11A = require('cm11a-js');
-    const gwa = require('gateway-addon');
-    Adapter = gwa.Adapter;
-    Database = gwa.Database;
-    utils = gwa.Utils;
-
-
-    class X10CM11Adaptor extends Adapter {
-        constructor(addonManager, manifest) {
-            super(addonManager, 'x10-unknown', manifest.name);
-
-            this.cm11a = CM11A();
-            addonManager.addAdapter(this);
-        }
-    }
-
-    function loadX10CM11Adapter(addonManager, manifest) {
-        const adapter = new X10CM11Adaptor(addonManager, manifest)
-    }
-
-    module.exports = loadX10CM11Adapter;
-
-})();
+module.exports = require('./x10-cm11-adapter');
