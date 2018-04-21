@@ -21,6 +21,11 @@
   "bugs": {
     "url": "https://github.com/AlanDThiessen/x10-cm11-adapter/issues"
   },
+  "files": [
+    "LICENSE",
+    "x10-cm11-adapter.js",
+    "index.js"
+  ]
   "homepage": "https://github.com/AlanDThiessen/x10-cm11-adapter#readme",
   "moziot": {
     "api": {
