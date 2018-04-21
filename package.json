@@ -21,5 +21,16 @@
   "bugs": {
     "url": "https://github.com/AlanDThiessen/x10-cm11-adapter/issues"
   },
-  "homepage": "https://github.com/AlanDThiessen/x10-cm11-adapter#readme"
+  "homepage": "https://github.com/AlanDThiessen/x10-cm11-adapter#readme",
+  "moziot": {
+    "api": {
+      "min": 1,
+      "max": 2
+    },
+    "plugin": true,
+    "exec": "{nodeLoader} {path}"
+  },
+  "dependencies": {
+    "cm11a-js": "^0.1.0"
+  }
 }
