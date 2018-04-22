@@ -24,31 +24,60 @@
  *
  ******************************************************************************/
 
-(function() {
-    'use strict';
-
-    let Adapter, Database, utils, CM11A;
-
-    CM11A = require('cm11a-js');
-    const gwa = require('gateway-addon');
-    Adapter = gwa.Adapter;
-    Database = gwa.Database;
-    utils = gwa.Utils;
+'use strict';
 
 
-    class X10CM11Adaptor extends Adapter {
-        constructor(addonManager, manifest) {
-            super(addonManager, 'x10-unknown', manifest.name);
+const {
+    Action,     // Action base class
+    Adapter,    // Adapter base class
+    Constants,  // Constants used throughout the package
+    Database,   // Class for interacting with the gateway's settings database
+    Deferred,   // Wrapper for a promise, primarily used internally
+    Device,     // Device base class
+    Event,      // Event base class
+    Property,   // Property base class
+    Utils,      // Utility functions
+} = require('gateway-addon');
 
-            this.cm11a = CM11A();
-            addonManager.addAdapter(this);
-        }
+
+class X10CM11Adaptor extends Adapter {
+    constructor(addonManager, manifest) {
+        super(addonManager, 'x10-unknown', manifest.name);
+        addonManager.addAdapter(this);
     }
 
-    function loadX10CM11Adapter(addonManager, manifest) {
-        const adapter = new X10CM11Adaptor(addonManager, manifest)
+    addDevice(deviceId, deviceDescription) {
+        return new Promise((resolve, reject) => {
+            if (deviceId in this.devices) {
+                reject('Device: ' + deviceId + ' already exists.');
+            }
+            else {
+                const device = new ExampleDevice(this, deviceId, deviceDescription);
+                this.handleDeviceAdded(device);
+                resolve(device);
+            }
+        });
     }
 
-    module.exports = loadX10CM11Adapter;
+    removeDevice(deviceId) {
+        return new Promise((resolve, reject) => {
+            const device = this.devices[deviceId];
+            if (device) {
+                this.handleDeviceRemoved(device);
+                resolve(device);
+            }
+            else {
+                reject('Device: ' + deviceId + ' not found.');
+            }
+        });
+    }
+}
 
-})();
+
+function LoadX10CM11Adapter(addonManager, manifest, errorCallback) {
+    const adapter = new X10CM11Adaptor(addonManager, manifest);
+}
+
+
+module.exports = LoadX10CM11Adapter;
+
