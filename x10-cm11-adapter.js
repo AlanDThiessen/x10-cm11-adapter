@@ -39,10 +39,16 @@ const {
     Utils,      // Utility functions
 } = require('gateway-addon');
 
+const CM11A = require('cm11a-js');
+
 
 class X10CM11Adaptor extends Adapter {
     constructor(addonManager, manifest) {
         super(addonManager, 'x10-unknown', manifest.name);
+
+        this.serialDevice = manifest.moziot.config.device;
+        this.cm11a = CM11A();
+
         addonManager.addAdapter(this);
     }
 

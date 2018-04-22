@@ -33,9 +33,22 @@
       "max": 2
     },
     "plugin": true,
-    "exec": "{nodeLoader} {path}"
+    "exec": "{nodeLoader} {path}",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "device": {
+          "type": "string",
+          "description": "Path to the serial device to which the CM11A is connected."
+        }
+      }
+    },
+    "config": {
+      "device": "/dev/ttyUSB0"
+    }
   },
   "dependencies": {
     "cm11a-js": "^0.1.0"
   }
 }
+
