@@ -42,46 +42,173 @@ const {
 const CM11A = require('cm11a-js');
 
 
-class X10CM11Adaptor extends Adapter {
-    constructor(addonManager, manifest) {
-        super(addonManager, 'x10-unknown', manifest.name);
+function x10Addr() {
+    return {
+        name: 'X10 Address',
+        value: 'A1',
+        metadata: {
+            type: 'string'
+        }
+    };
+}
 
-        this.serialDevice = manifest.moziot.config.device;
-        this.cm11a = CM11A();
 
-        addonManager.addAdapter(this);
+function on() {
+    return {
+        name: 'on',
+        value: false,
+        metadata: {
+            type: 'boolean'
+        }
+    };
+}
+
+
+function level() {
+    return {
+        name: 'level',
+        value: 0,
+        metadata: {
+            type: 'number',
+            unit: 'percent'
+        }
+    };
+}
+
+
+const lampModule = {
+    type: 'lampModule',
+    name: 'X10 Lamp Module',
+    properties: [
+        x10Addr(),
+        on(),
+        level()
+    ]
+};
+
+
+const applianceModule = {
+    type: 'applianceModule',
+    name: 'X10 Appliance Module',
+    properties: [
+        x10Addr(),
+        on(),
+        level()
+    ]
+};
+
+
+const onOffSwitch = {
+    type: 'onOffSwitch',
+    name: 'X10 On/Off Switch',
+    properties: [
+        x10Addr(),
+        on()
+    ]
+};
+
+
+const dimmerSwitch = {
+    type: 'dimmerSwitch',
+    name: 'X10 Dimmer Switch',
+    properties: [
+        x10Addr(),
+        on(),
+        level()
+    ]
+};
+
+
+const binarySensor = {
+    type: 'binarySensor',
+    name: 'X10 On/Off Sensor',
+    properties: [
+        x10Addr(),
+        on()
+    ]
+};
+
+
+const X10_DEVICE_TYPES = [
+    lampModule,
+    applianceModule,
+    onOffSwitch,
+    dimmerSwitch,
+    binarySensor
+];
+
+
+class X10Property extends Property {
+    constructor(device, name, descr, value) {
+        super(device, name, descr);
+        this.setCachedValue(value);
     }
 
-    addDevice(deviceId, deviceDescription) {
-        return new Promise((resolve, reject) => {
-            if (deviceId in this.devices) {
-                reject('Device: ' + deviceId + ' already exists.');
-            }
-            else {
-                const device = new ExampleDevice(this, deviceId, deviceDescription);
-                this.handleDeviceAdded(device);
-                resolve(device);
-            }
-        });
-    }
-
-    removeDevice(deviceId) {
-        return new Promise((resolve, reject) => {
-            const device = this.devices[deviceId];
-            if (device) {
-                this.handleDeviceRemoved(device);
-                resolve(device);
-            }
-            else {
-                reject('Device: ' + deviceId + ' not found.');
-            }
+    /**
+     * @param {any} value
+     * @return {Promise} a promise which resolves to the updated value.
+     */
+    setValue(value) {
+        return new Promise(resolve => {
+            this.setCachedValue(value);
+            resolve(this.value);
+            this.device.notifyPropertyChanged(this);
         });
     }
 }
 
 
+class X10Device extends Device {
+    /**
+     * @param {X10CM11Adapter} adapter
+     * @param {String} id - A globally unique identifier
+     * @param {Object} template - the virtual thing to represent
+     */
+    constructor(adapter, id, template) {
+        super(adapter, id);
+
+        this.name = template.name;
+        this.type = template.type;
+
+        for (let prop of template.properties) {
+            this.properties.set(prop.name,
+                new X10Property(this, prop.name, prop.metadata, prop.value));
+        }
+
+        this.adapter.handleDeviceAdded(this);
+    }
+}
+
+
+class X10CM11Adapter extends Adapter {
+    constructor(addonManager, manifest) {
+        super(addonManager, 'x10-unknown', manifest.name);
+
+        this.serialDevice = manifest.moziot.config.device;
+        this.cm11a = CM11A();
+        this.cm11a.start(this.serialDevice);
+
+        addonManager.addAdapter(this);
+
+        this.addAllDeviceTypes();
+    }
+
+
+    addAllDeviceTypes() {
+        for (let i = 0; i < X10_DEVICE_TYPES.length; i++) {
+            var id = 'x10-' + i;
+
+            if (!this.devices[id]) {
+                new X10Device(this, id, X10_DEVICE_TYPES[i]);
+            }
+        }
+    }
+
+}
+
+
 function LoadX10CM11Adapter(addonManager, manifest, errorCallback) {
-    const adapter = new X10CM11Adaptor(addonManager, manifest);
+    const adapter = new X10CM11Adapter(addonManager, manifest);
 }
 
 
