@@ -95,7 +95,7 @@ const x10OnOffSwitch = {
 
 
 const x10DimmerSwitch = {
-    name: 'Lamp Module',
+    name: 'Dimmer Switch',
     type: 'multiLevelSwitch',
     properties: [
         on(),
@@ -217,6 +217,7 @@ class X10CM11Adapter extends Adapter {
     constructor(addonManager, manifest) {
         super(addonManager, 'x10-unknown', manifest.name);
 
+        this.configuredModules = manifest.moziot.config.modules;
         this.serialDevice = manifest.moziot.config.device;
         this.cm11a = CM11A();
 
@@ -229,8 +230,16 @@ class X10CM11Adapter extends Adapter {
 
         addonManager.addAdapter(this);
 
-        for(let i = 0; i < manifest.moziot.config.modules.length; i++) {
-            var module = manifest.moziot.config.modules[i];
+        this.addModules();
+    }
+
+    startPairing() {
+        this.addModules();
+    }
+
+    addModules() {
+        for(let i = 0; i < this.configuredModules.length; i++) {
+            var module = this.configuredModules[i];
             var id = 'x10-' + module.houseCode + module.unitCode;
             var x10Addr = module.houseCode + module.unitCode;
 
@@ -239,6 +248,7 @@ class X10CM11Adapter extends Adapter {
             }
         }
     }
+
 
     unitStatusReported(status) {
         console.log('CM11A Unit Status');
