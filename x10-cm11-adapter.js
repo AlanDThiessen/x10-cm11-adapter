@@ -42,113 +42,116 @@ const {
 const CM11A = require('cm11a-js');
 
 
-function x10Addr() {
-    return {
-        name: 'X10 Address',
-        value: 'A1',
-        metadata: {
-            type: 'string'
-        }
-    };
-}
-
 
 function on() {
     return {
         name: 'on',
-        value: false,
+        value: 'false',
         metadata: {
             type: 'boolean'
         }
-    };
+    }
 }
 
 
 function level() {
     return {
         name: 'level',
-        value: 0,
+        value: 100,
         metadata: {
             type: 'number',
             unit: 'percent'
         }
-    };
+    }
 }
 
 
-const lampModule = {
-    type: 'lampModule',
-    name: 'X10 Lamp Module',
+const x10LampModule = {
+    name: 'Lamp Module',
+    type: 'dimmableLight',
     properties: [
-        x10Addr(),
         on(),
         level()
     ]
 };
 
 
-const applianceModule = {
-    type: 'applianceModule',
-    name: 'X10 Appliance Module',
+const x10ApplianceModule = {
+    name: 'Appliance Module',
+    type: 'onOffLight',
     properties: [
-        x10Addr(),
-        on(),
-        level()
+        on()
     ]
 };
 
 
-const onOffSwitch = {
+const x10OnOffSwitch = {
+    name: 'On/Off Switch',
     type: 'onOffSwitch',
-    name: 'X10 On/Off Switch',
     properties: [
-        x10Addr(),
         on()
     ]
 };
 
 
-const dimmerSwitch = {
-    type: 'dimmerSwitch',
-    name: 'X10 Dimmer Switch',
+const x10DimmerSwitch = {
+    name: 'Lamp Module',
+    type: 'multiLevelSwitch',
     properties: [
-        x10Addr(),
         on(),
         level()
     ]
 };
 
 
-const binarySensor = {
+const x10OnOffSensor = {
+    name: 'On/Off Sensor',
     type: 'binarySensor',
-    name: 'X10 On/Off Sensor',
     properties: [
-        x10Addr(),
         on()
     ]
 };
 
 
-const X10_DEVICE_TYPES = [
-    lampModule,
-    applianceModule,
-    onOffSwitch,
-    dimmerSwitch,
-    binarySensor
-];
+
+const X10_DEVICE_TYPES = {
+    'Lamp Module': x10LampModule,
+    'Appliance Module': x10ApplianceModule,
+    'On/Off Switch': x10OnOffSwitch,
+    'Dimmer Switch': x10DimmerSwitch,
+    'On/Off Sensor': x10OnOffSensor
+};
 
 
 class X10Property extends Property {
     constructor(device, name, descr, value) {
         super(device, name, descr);
         this.setCachedValue(value);
+
+        if(this.name === 'level') {
+            this.adjust = {
+                'oldLevel': value,
+                'func': 'bright',
+                'amount': 0
+            }
+        }
     }
 
-    /**
-     * @param {any} value
-     * @return {Promise} a promise which resolves to the updated value.
-     */
     setValue(value) {
+        if(this.name === 'level') {
+            var percentDiff = Math.abs(value - this.adjust.oldLevel);
+            this.adjust.amount = Math.round(percentDiff / 100 * 22);    // The maximum value is 22
+
+            if(value >= this.adjust.oldLevel) {
+                this.adjust.func = 'bright';
+            }
+            else {
+                this.adjust.func = 'dim';
+            }
+
+            this.adjust.oldLevel = value;
+        }
+
         return new Promise(resolve => {
             this.setCachedValue(value);
             resolve(this.value);
@@ -158,24 +161,54 @@ class X10Property extends Property {
 }
 
 
+
 class X10Device extends Device {
     /**
      * @param {X10CM11Adapter} adapter
      * @param {String} id - A globally unique identifier
      * @param {Object} template - the virtual thing to represent
      */
-    constructor(adapter, id, template) {
+    constructor(adapter, id, x10Addr, moduleType) {
         super(adapter, id);
 
-        this.name = template.name;
-        this.type = template.type;
+        var template = X10_DEVICE_TYPES[moduleType];
+        this.name = 'X10 ' + template.name + ' (' + x10Addr + ')';
+        this.type = template.type
+        this.x10Addr = x10Addr;
 
+        console.log(template.properties);
         for (let prop of template.properties) {
             this.properties.set(prop.name,
                 new X10Property(this, prop.name, prop.metadata, prop.value));
         }
 
+        console.log('CM11A Device Added: ' + this.name + ' with address ' + this.x10Addr);
+
         this.adapter.handleDeviceAdded(this);
+    }
+
+    notifyPropertyChanged(property) {
+        super.notifyPropertyChanged(property);
+
+        console.log('CM11A Property changed for ' + this.x10Addr + ': ' + property.name + ' = ' + property.value);
+
+        switch(property.name) {
+            case 'on': {
+                if(property.value) {
+                    this.adapter.cm11a.turnOn([this.x10Addr]);
+                }
+                else {
+                    this.adapter.cm11a.turnOff([this.x10Addr]);
+                }
+                break;
+            }
+
+            case 'level': {
+                console.log('CM11A Adjusting level: ' + property.adjust.func + ' = ' + property.adjust.amount );
+                this.adapter.cm11a[property.adjust.func]([this.x10Addr], property.adjust.amount);
+                break;
+            }
+        }
     }
 }
 
@@ -186,24 +219,43 @@ class X10CM11Adapter extends Adapter {
 
         this.serialDevice = manifest.moziot.config.device;
         this.cm11a = CM11A();
+
+        this.cm11a.on('unitStatus', (status) => {
+            this.unitStatusReported(status);
+        });
+
+        console.log('CM11A: Opening ' + this.serialDevice);
         this.cm11a.start(this.serialDevice);
 
         addonManager.addAdapter(this);
 
-        this.addAllDeviceTypes();
-    }
+        for(let i = 0; i < manifest.moziot.config.modules.length; i++) {
+            var module = manifest.moziot.config.modules[i];
+            var id = 'x10-' + module.houseCode + module.unitCode;
+            var x10Addr = module.houseCode + module.unitCode;
 
-
-    addAllDeviceTypes() {
-        for (let i = 0; i < X10_DEVICE_TYPES.length; i++) {
-            var id = 'x10-' + i;
-
-            if (!this.devices[id]) {
-                new X10Device(this, id, X10_DEVICE_TYPES[i]);
+            if(!this.devices[id]) {
+                new X10Device(this, id, x10Addr, module.moduleType);
             }
         }
     }
 
+    unitStatusReported(status) {
+        console.log('CM11A Unit Status');
+        console.log(status);
+    }
+
+    unload() {
+        return new Promise(resolve => {
+            this.cm11a.on('close', () => {
+                console.log('CM11A Stopped.');
+                resolve();
+            });
+
+            console.log('CM11A Stopping...');
+            this.cm11a.stop();
+        });
+    }
 }
 
 
