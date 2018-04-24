@@ -194,8 +194,20 @@ class X10Device extends Device {
 
         switch(property.name) {
             case 'on': {
-                if(property.value) {
+                if (property.value) {
+                    var level = 100;
+
+                    if(this.hasOwnProperty('level')) {
+                        level = this.properties.get('level').value;
+                    }
+
                     this.adapter.cm11a.turnOn([this.x10Addr]);
+
+                    if (level < '100') {
+                        // TODO: I believe there is an X10 Extended cdde to set the level before turning the device on.
+                        var amount = Math.round((100 - level) / 100 * 22);
+                        this.adapter.cm11a.dim([this.x10Addr], amount);
+                    }
                 }
                 else {
                     this.adapter.cm11a.turnOff([this.x10Addr]);
