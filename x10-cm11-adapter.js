@@ -197,7 +197,7 @@ class X10Device extends Device {
                 if (property.value) {
                     var level = 100;
 
-                    if(this.hasOwnProperty('level')) {
+                    if(this.hasProperty('level')) {
                         level = this.properties.get('level').value;
                     }
 
