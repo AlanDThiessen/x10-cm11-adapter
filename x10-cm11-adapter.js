@@ -216,11 +216,12 @@ class X10Device extends Device {
             }
 
             case 'level': {
-                console.log('CM11A Adjusting level: ' + property.adjust.func + ' = ' + property.adjust.amount );
-                this.adapter.cm11a[property.adjust.func]([this.x10Addr], property.adjust.amount);
+                if( this.hasProperty('on') && this.properties.get('on').value ) {
+                    console.log('CM11A Adjusting level: ' + property.adjust.func + ' = ' + property.adjust.amount );
+                    this.adapter.cm11a[property.adjust.func]([this.x10Addr], property.adjust.amount);
+                }
                 break;
-            }
-        }
+       }
     }
 }
 
