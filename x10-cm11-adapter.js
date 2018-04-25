@@ -42,6 +42,13 @@ const {
 const CM11A = require('cm11a-js');
 
 
+const STATUS_PROP_MAP = {
+    'ON':       { prop: 'on', value: true  },
+    'OFF':      { prop: 'on', value: false },
+    'DIM':      { prop: 'level', value: -1 },
+    'BRIGHT':   { prop: 'level', value: 1 }
+};
+
 
 function on() {
     return {
@@ -192,12 +199,12 @@ class X10Device extends Device {
 
         console.log('CM11A Property changed for ' + this.x10Addr + ': ' + property.name + ' = ' + property.value);
 
-        switch(property.name) {
+        switch (property.name) {
             case 'on': {
                 if (property.value) {
                     var level = 100;
 
-                    if(this.hasProperty('level')) {
+                    if (this.hasProperty('level')) {
                         level = this.properties.get('level').value;
                     }
 
@@ -222,9 +229,30 @@ class X10Device extends Device {
                 }
                 break;
             }
-       }
+        }
+    }
+
+
+    updatePropertyValue(propMapEntry, propValue) {
+        if (this.hasProperty(propMapEntry.prop)) {
+            var property = this.properties.get(propMapEntry.prop);
+            var newValue = property.value;
+
+            if (propMapEntry.prop === 'level') {
+                // Level needs to be handled differently
+            }
+            else {
+                newValue = propMapEntry.value;
+            }
+
+            if (property.value != newValue) {
+                property.setCachedValue(newValue);
+                super.notifyPropertyChanged(property);
+            }
+        }
     }
 }
+
 
 
 class X10CM11Adapter extends Adapter {
@@ -247,9 +275,11 @@ class X10CM11Adapter extends Adapter {
         this.addModules();
     }
 
+
     startPairing() {
         this.addModules();
     }
+
 
     addModules() {
         for(let i = 0; i < this.configuredModules.length; i++) {
@@ -265,8 +295,17 @@ class X10CM11Adapter extends Adapter {
 
 
     unitStatusReported(status) {
-        console.log('CM11A Unit Status');
-        console.log(status);
+        console.log('CM11A Update Status: ' + status);
+
+        if(STATUS_PROP_MAP.hasOwnProperty(status.x10Function)) {
+            status.units.forEach((unit) => {
+                var device = this.getDevice('x10-' + unit);
+
+                if(device !== undefined) {
+                    device.updatePropertyValue(STATUS_PROP_MAP[status.x10Function], status.level);
+                }
+            });
+        }
     }
 
     unload() {
