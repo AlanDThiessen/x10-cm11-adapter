@@ -239,7 +239,9 @@ class X10Device extends Device {
             var newValue = property.value;
 
             if (propMapEntry.prop === 'level') {
-                // Level needs to be handled differently
+                newValue += (propMapEntry.value * propValue);
+                if(newValue > 100) { newValue = 100; }
+                if(newValue <   0) { newValue =   0; }
             }
             else {
                 newValue = propMapEntry.value;
