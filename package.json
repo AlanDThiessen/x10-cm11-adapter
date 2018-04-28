@@ -23,8 +23,10 @@
   },
   "files": [
     "LICENSE",
+    "SHA256SUMS",
     "x10-cm11-adapter.js",
-    "index.js"
+    "index.js",
+    "node_modules"
   ],
   "homepage": "https://github.com/AlanDThiessen/x10-cm11-adapter#readme",
   "moziot": {

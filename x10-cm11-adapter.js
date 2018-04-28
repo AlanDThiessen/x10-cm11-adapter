@@ -180,7 +180,7 @@ class X10Device extends Device {
 
         var template = X10_DEVICE_TYPES[moduleType];
         this.name = 'X10 ' + template.name + ' (' + x10Addr + ')';
-        this.type = template.type
+        this.type = template.type;
         this.x10Addr = x10Addr;
 
         console.log(template.properties);
