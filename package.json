@@ -1,6 +1,6 @@
 {
   "name": "x10-cm11-adapter",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A Mozilla IoT adapter for controlling X10 devices through a CM11A serial interface.",
   "main": "index.js",
   "scripts": {
@@ -123,4 +123,3 @@
     "cm11a-js": "^0.3.2"
   }
 }
-
