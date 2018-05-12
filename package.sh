@@ -29,7 +29,7 @@ if [ -n $ADDON_ARCH ]; then
     tar -xvf $TARFILE
     TARFILE_ARCH="${TARFILE/.tgz/-${ADDON_ARCH}.tgz}"
     cp -r node_modules ./package
-    tar -cvf ${TARFILE_ARCH} package
+    tar -czf ${TARFILE_ARCH} package
     rm -rf package
     rm -f $TARFILE
     echo "Created ${TARFILE_ARCH}"
