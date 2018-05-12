@@ -28,7 +28,7 @@
     "index.js",
     "node_modules"
   ],
-  "homepage": "https://github.com/AlanDThiessen/x10-cm11-adapter#readme",
+  "homepage": "https://github.com/AlanDThiessen/x10-cm11-adapter",
   "moziot": {
     "api": {
       "min": 1,
