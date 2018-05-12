@@ -15,11 +15,21 @@
 ADDON_ARCH=$1
 HOST_ARCH=`uname -s`
 
+if [ -z $ADDON_ARCH ]; then
+   echo Please specify an architecture.
+   exit 1
+fi
+
 if [ $HOST_ARCH == "Darwin" ]; then
     SHASUM='shasum -a 256'
 else
-    SHASUM='shasum'
+    SHASUM='sha256sum'
 fi
+
+if [ "${ADDON_ARCH}" == "linux-arm" ]; then
+  npm rebuild --arch=armv6l --target_arch=arm
+fi
+
 
 if [ -n $ADDON_ARCH ]; then
     rm -f SHA256SUMS
@@ -34,4 +44,5 @@ if [ -n $ADDON_ARCH ]; then
     rm -f $TARFILE
     echo "Created ${TARFILE_ARCH}"
 fi
+
 
