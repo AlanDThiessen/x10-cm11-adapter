@@ -50,12 +50,40 @@ const STATUS_PROP_MAP = {
 };
 
 
+function bool() {
+    return {
+        name: 'on',
+        value: false,
+        metadata: {
+            '@type': 'BooleanProperty',
+            type: 'boolean'
+        }
+    }
+}
+
+
 function on() {
     return {
         name: 'on',
-        value: 'false',
+        value: false,
         metadata: {
+            '@type': 'OnOffProperty',
+            label: 'On/Off',
             type: 'boolean'
+        }
+    }
+}
+
+
+function brightness() {
+    return {
+        name: 'level',
+        value: 100,
+        metadata: {
+            '@type': 'BrightnessProperty',
+            label: 'Brightness',
+            type: 'number',
+            unit: 'percent'
         }
     }
 }
@@ -66,6 +94,8 @@ function level() {
         name: 'level',
         value: 100,
         metadata: {
+            '@type': 'LevelProperty',
+            label: 'Level',
             type: 'number',
             unit: 'percent'
         }
@@ -75,16 +105,18 @@ function level() {
 
 const x10LampModule = {
     name: 'Lamp Module',
+    '@type': ['OnOffSwitch', 'Light'],
     type: 'dimmableLight',
     properties: [
         on(),
-        level()
+        brightness()
     ]
 };
 
 
 const x10ApplianceModule = {
     name: 'Appliance Module',
+    '@type': ['OnOffSwitch', 'Light'],
     type: 'onOffLight',
     properties: [
         on()
@@ -94,6 +126,7 @@ const x10ApplianceModule = {
 
 const x10OnOffSwitch = {
     name: 'On/Off Switch',
+    '@type': ['OnOffSwitch'],
     type: 'onOffSwitch',
     properties: [
         on()
@@ -103,6 +136,7 @@ const x10OnOffSwitch = {
 
 const x10DimmerSwitch = {
     name: 'Dimmer Switch',
+    '@type': ['OnOffSwitch', 'MultiLevelSwitch'],
     type: 'multiLevelSwitch',
     properties: [
         on(),
@@ -113,9 +147,10 @@ const x10DimmerSwitch = {
 
 const x10OnOffSensor = {
     name: 'On/Off Sensor',
+    '@type': ['BinarySensor'],
     type: 'binarySensor',
     properties: [
-        on()
+        bool()
     ]
 };
 
@@ -181,6 +216,7 @@ class X10Device extends Device {
         var template = X10_DEVICE_TYPES[moduleType];
         this.name = 'X10 ' + template.name + ' (' + x10Addr + ')';
         this.type = template.type;
+        this['@type'] = template['@type'];
         this.x10Addr = x10Addr;
 
         console.log(template.properties);
