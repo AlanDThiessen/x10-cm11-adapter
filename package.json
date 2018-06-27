@@ -1,6 +1,7 @@
 {
   "name": "x10-cm11-adapter",
-  "version": "0.2.1",
+  "display_name": "X10 (CM11)",
+  "version": "0.2.2",
   "description": "A Mozilla IoT adapter for controlling X10 devices through a CM11A serial interface.",
   "main": "index.js",
   "scripts": {
