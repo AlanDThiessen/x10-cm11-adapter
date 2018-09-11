@@ -32,7 +32,7 @@
   "homepage": "https://github.com/AlanDThiessen/x10-cm11-adapter",
   "moziot": {
     "api": {
-      "min": 1,
+      "min": 2,
       "max": 2
     },
     "plugin": true,
