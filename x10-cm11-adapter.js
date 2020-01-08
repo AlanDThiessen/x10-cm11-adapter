@@ -40,6 +40,7 @@ const {
 } = require('gateway-addon');
 
 const CM11A = require('cm11a-js');
+const manifest = require('./manifest.json');
 
 
 const STATUS_PROP_MAP = {
@@ -294,11 +295,11 @@ class X10Device extends Device {
 
 
 class X10CM11Adapter extends Adapter {
-    constructor(addonManager, manifest) {
-        super(addonManager, 'x10-unknown', manifest.name);
+    constructor(addonManager, config) {
+        super(addonManager, 'x10-unknown', manifest.id);
 
-        this.configuredModules = manifest.moziot.config.modules;
-        this.serialDevice = manifest.moziot.config.device;
+        this.configuredModules = config.modules;
+        this.serialDevice = config.device;
         this.cm11a = CM11A();
 
         this.cm11a.on('unitStatus', (status) => {
@@ -360,8 +361,15 @@ class X10CM11Adapter extends Adapter {
 }
 
 
-function LoadX10CM11Adapter(addonManager, manifest, errorCallback) {
-    const adapter = new X10CM11Adapter(addonManager, manifest);
+function LoadX10CM11Adapter(addonManager, _, errorCallback) {
+    const db = new Database(manifest.id);
+    db.open().then(() => {
+        return db.loadConfig();
+    }).then((config) => {
+        new X10CM11Adapter(addonManager, config);
+    }).catch((e) => {
+        errorCallback(manifest.id, `Failed to open database: ${e}`);
+    });
 }
 
 
