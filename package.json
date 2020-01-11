@@ -1,7 +1,7 @@
 {
   "name": "x10-cm11-adapter",
   "display_name": "X10 (CM11)",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A Mozilla WebThings Gateway adapter for controlling X10 devices through a CM11A serial interface.",
   "main": "index.js",
   "scripts": {
@@ -123,6 +123,6 @@
     }
   },
   "dependencies": {
-    "cm11a-js": "^0.4.2"
+    "cm11a-js": "^0.5.0"
   }
 }
