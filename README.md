@@ -1,13 +1,13 @@
 # x10-cm11-adapter
-A Mozilla IoT adapter for controlling X10 devices through a CM11 serial interface.
+A Mozilla WebThings Gateway adapter for controlling X10 devices through a CM11 serial interface.
 
 ## About
-This project is an add-on to the [Mozilla IoT Gateway](https://iot.mozilla.org/gateway/).  It enables users to control [X10 Devices](https://www.x10.com/) through the [CM11](http://kbase.x10.com/wiki/CM11A) serial interface.
+This project is an add-on to the [Mozilla WebThings Gateway](https://iot.mozilla.org/gateway/).  It enables users to control [X10 Devices](https://www.x10.com/) through the [CM11](http://kbase.x10.com/wiki/CM11A) serial interface.
 
 ## Installation
-As this is a plugin for the [Mozilla IoT Gateway](https://iot.mozilla.org/gateway/), please first read their instructions for setting up a gateway.
+As this is a plugin for the [Mozilla WebThings Gateway](https://iot.mozilla.org/gateway/), please first read their instructions for setting up a gateway.
 
-1. In the Mozilla IoT gateway, select *Menu -> Settings -> Add-ons*.
+1. In the Mozilla WebThings Gateway, select *Menu -> Settings -> Add-ons*.
 2. Click the `+` (plus) button to install an add-on.
 3. Find *X10-CM11* in the list and click the `+ Add` button.
 
@@ -15,7 +15,7 @@ As this is a plugin for the [Mozilla IoT Gateway](https://iot.mozilla.org/gatewa
 Before using this addon, X10 modules need to be added to the configuration.
 
 To configure the X10-CM11 Adapter:
-1. In the Mozilla IoT gateway, select *Menu -> Settings -> Add-ons*.
+1. In the Mozilla WebThings Gateway, select *Menu -> Settings -> Add-ons*.
 2. Find "x10-cm11-adapter" and click the * Configure * button.
 
 ### Options

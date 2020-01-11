@@ -1,45 +1,21 @@
 {
-  "name": "x10-cm11-adapter",
-  "display_name": "X10 (CM11)",
-  "version": "0.3.1",
-  "description": "A Mozilla WebThings Gateway adapter for controlling X10 devices through a CM11A serial interface.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AlanDThiessen/x10-cm11-adapter.git"
-  },
-  "keywords": [
-    "X10",
-    "IoT",
-    "Mozilla",
-    "CM11"
-  ],
   "author": "Alan Thiessen",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/AlanDThiessen/x10-cm11-adapter/issues"
+  "description": "A Mozilla WebThings Gateway adapter for controlling X10 devices through a CM11A serial interface.",
+  "gateway_specific_settings": {
+    "webthings": {
+      "exec": "{nodeLoader} {path}",
+      "primary_type": "adapter",
+      "strict_max_version": "*",
+      "strict_min_version": "0.10.0"
+    }
   },
-  "files": [
-    "LICENSE",
-    "README.md",
-    "SHA256SUMS",
-    "x10-cm11-adapter.js",
-    "index.js",
-    "manifest.json",
-    "node_modules"
-  ],
-  "homepage": "https://github.com/AlanDThiessen/x10-cm11-adapter",
-  "moziot": {
-    "api": {
-      "min": 2,
-      "max": 2
-    },
-    "plugin": true,
-    "exec": "{nodeLoader} {path}",
-    "config": {
+  "homepage_url": "https://github.com/AlanDThiessen/x10-cm11-adapter",
+  "id": "x10-cm11-adapter",
+  "license": "MIT",
+  "manifest_version": 1,
+  "name": "X10 (CM11)",
+  "options": {
+    "default": {
       "device": "/dev/ttyUSB0",
       "modules": []
     },
@@ -122,7 +98,6 @@
       }
     }
   },
-  "dependencies": {
-    "cm11a-js": "^0.4.2"
-  }
+  "short_name": "X10 (CM11)",
+  "version": "0.3.1"
 }
