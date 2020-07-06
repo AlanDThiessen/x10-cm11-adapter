@@ -2,7 +2,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Alan Thiessen
+ * Copyright (c) 2020 Alan Thiessen
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,15 +28,10 @@
 
 
 const {
-    Action,     // Action base class
     Adapter,    // Adapter base class
-    Constants,  // Constants used throughout the package
     Database,   // Class for interacting with the gateway's settings database
-    Deferred,   // Wrapper for a promise, primarily used internally
     Device,     // Device base class
-    Event,      // Event base class
     Property,   // Property base class
-    Utils,      // Utility functions
 } = require('gateway-addon');
 
 const CM11A = require('cm11a-js');
@@ -182,7 +177,7 @@ class X10Property extends Property {
 
     setValue(value) {
         if(this.name === 'level') {
-            var percentDiff = Math.abs(value - this.adjust.oldLevel);
+            let percentDiff = Math.abs(value - this.adjust.oldLevel);
             this.adjust.amount = Math.round(percentDiff / 100 * 22);    // The maximum value is 22
 
             if(value >= this.adjust.oldLevel) {
@@ -209,12 +204,13 @@ class X10Device extends Device {
     /**
      * @param {X10CM11Adapter} adapter
      * @param {String} id - A globally unique identifier
-     * @param {Object} template - the virtual thing to represent
+     * @param {String} x10Addr - The X10 protocol address of the device
+     * @param {String} moduleType - A string indicating which type of module this device controls
      */
     constructor(adapter, id, x10Addr, moduleType) {
         super(adapter, id);
 
-        var template = X10_DEVICE_TYPES[moduleType];
+        let template = X10_DEVICE_TYPES[moduleType];
         this.name = 'X10 ' + template.name + ' (' + x10Addr + ')';
         this.type = template.type;
         this['@type'] = template['@type'];
@@ -239,7 +235,7 @@ class X10Device extends Device {
         switch (property.name) {
             case 'on': {
                 if (property.value) {
-                    var level = 100;
+                    let level = 100;
 
                     if (this.hasProperty('level')) {
                         level = this.properties.get('level').value;
@@ -249,7 +245,7 @@ class X10Device extends Device {
 
                     if (level < '100') {
                         // TODO: I believe there is an X10 Extended cdde to set the level before turning the device on.
-                        var amount = Math.round((100 - level) / 100 * 22);
+                        let amount = Math.round((100 - level) / 100 * 22);
                         this.adapter.cm11a.dim([this.x10Addr], amount);
                     }
                 }
@@ -272,8 +268,8 @@ class X10Device extends Device {
 
     updatePropertyValue(propMapEntry, propValue) {
         if (this.hasProperty(propMapEntry.prop)) {
-            var property = this.properties.get(propMapEntry.prop);
-            var newValue = property.value;
+            let property = this.properties.get(propMapEntry.prop);
+            let newValue = property.value;
 
             if (propMapEntry.prop === 'level') {
                 newValue += (propMapEntry.value * propValue);
@@ -328,9 +324,9 @@ class X10CM11Adapter extends Adapter {
 
     addModules() {
         for(let i = 0; i < this.configuredModules.length; i++) {
-            var module = this.configuredModules[i];
-            var id = 'x10-' + module.houseCode + module.unitCode;
-            var x10Addr = module.houseCode + module.unitCode;
+            let module = this.configuredModules[i];
+            let id = 'x10-' + module.houseCode + module.unitCode;
+            let x10Addr = module.houseCode + module.unitCode;
 
             if(!this.devices[id]) {
                 new X10Device(this, id, x10Addr, module.moduleType);
@@ -344,7 +340,7 @@ class X10CM11Adapter extends Adapter {
 
         if(STATUS_PROP_MAP.hasOwnProperty(status.x10Function)) {
             status.units.forEach((unit) => {
-                var device = this.getDevice('x10-' + unit);
+                let device = this.getDevice('x10-' + unit);
 
                 if(device !== undefined) {
                     device.updatePropertyValue(STATUS_PROP_MAP[status.x10Function], status.level);
