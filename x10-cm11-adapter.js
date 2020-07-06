@@ -309,6 +309,12 @@ class X10CM11Adapter extends Adapter {
         console.log('CM11A: Opening ' + this.serialDevice);
         this.cm11a.start(this.serialDevice);
 
+        // Set the CM11A clock once a day to prevent drift
+        this.setClockInterval = setInterval(() => {
+            console.log("CM11A: Setting Clock");
+            this.cm11a.setClock();
+        }, (24 * 60 * 60 * 1000));
+
         addonManager.addAdapter(this);
 
         this.addModules();
@@ -356,6 +362,7 @@ class X10CM11Adapter extends Adapter {
 
             console.log('CM11A Stopping...');
             this.cm11a.stop();
+            clearInterval(this.setClockInterval);
         });
     }
 }
