@@ -34,8 +34,7 @@ jobs:
         platform: [
           'linux-arm',
           'linux-arm64',
-          'linux-x64',
-          'darwin-x64',
+          'linux-x64'
         ]
         pair: [
           'node:20'
@@ -47,8 +46,6 @@ jobs:
             host-os: 'ubuntu-latest'
           - platform: 'linux-x64'
             host-os: 'ubuntu-latest'
-#          - platform: 'darwin-x64'
-#            host-os: 'macos-latest'
           - pair: 'node:20'
             language: 'node'
             version: '20'
