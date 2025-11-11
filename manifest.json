@@ -6,7 +6,7 @@
       "exec": "{nodeLoader} {path}",
       "primary_type": "adapter",
       "strict_max_version": "*",
-      "strict_min_version": "2.0.0"
+      "strict_min_version": "1.0.0"
     }
   },
   "homepage_url": "https://github.com/AlanDThiessen/x10-cm11-adapter",
@@ -99,5 +99,5 @@
     }
   },
   "short_name": "X10 (CM11)",
-  "version": "0.6.5"
+  "version": "0.6.6"
 }
